@@ -5,6 +5,8 @@ from collections import defaultdict
 import os
 from resource.resource import init_resource, append_resource
 
+
+
 R = [
     "Views",
     "ViewRootImpl",
@@ -51,7 +53,7 @@ apps = {
     "News_Reader": "apk/low/News_Reader_7358.apk",
     "Activity_Manager": "apk/low/Activity_Manager_7383.apk",
 }
-N = 2
+N = 0
 
 previous_centers = {}  # 聚类中心，用于一致性检查
 category = {i + 1: [r for r in R] for i in range(N)}  # 资源类别
@@ -65,6 +67,11 @@ bug_report = {}  # 发现的老化 bug
 state = set()  # 遍历到的状态
 views = {}  # 遍历到的所有视图
 weight = {key: 1 for key in R}  # 资源的权重
+
+
+def initialize(n):
+    global N
+    N = n
 
 
 def get_data():

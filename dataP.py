@@ -2,14 +2,11 @@ import time
 from collections import defaultdict, Counter
 
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib import rcParams
 rcParams['font.sans-serif'] = ['SimHei']
 rcParams['axes.unicode_minus'] = False
 import json
 import venn
-from matplotlib_venn import venn3
-from apk.apk import component_extract
 import csv
 
 
@@ -53,13 +50,8 @@ def plot_data(data, x_label="X轴", y_label="Y轴", title="图表"):
     plt.show()
 
 
-def plot_venn(set1, set2, set3, labels=("1", "2", "3")):
-    if not all(isinstance(s, set) for s in [set1, set2, set3]):
-        raise TypeError("所有输入必须是集合类型")
-    venn3([set1, set2, set3], set_labels=labels)
-
-    plt.savefig("venn.pdf", format="pdf")
-    plt.show()
+import matplotlib.pyplot as plt
+from matplotlib_venn import venn3
 
 
 def average_y_values(data):
@@ -518,25 +510,31 @@ def multi_pre_RQ():
 
 def multi_RQ1():
     # venn 图，用于说明多智能体时各个智能体所到达的区域较为离散
-    states = {
-        1: set(),
-        2: set(),
-        # 3: set(),
-        # 4: set()
-    }
-    for app in apps.keys():
-        for i in range(2):
-            try:
-                values = get_column_from_csv(f'result_multi\{app}\{1}\state_2_{i}.csv')
-                for value in values:
-                    states[i + 1].add(app + value)
-            except:
-                pass
 
-    labels = venn.get_labels(list(states.values()), fill=['number', 'logic', 'percent'])
-    fig, ax = venn.venn2(labels, names=list('12345'))
-    fig.savefig(f"multi_venn2.pdf", format="pdf")
-    fig.show()
+    for j in range(2, 5):
+        states = {
+            k: set() for k in range(1, j + 1)
+        }
+        for app in apps.keys():
+            for i in range(j):
+                try:
+                    if j != 4:
+                        values = get_column_from_csv(f'result_multi\{app}\{1}\state_{j}_{i}.csv')
+                    else:
+                        values = get_column_from_csv(f'result_multi\{app}\{1}\state_n_{i}.csv')
+                    for value in values:
+                        states[i + 1].add(app + value)
+                except:
+                    pass
+        labels = venn.get_labels(list(states.values()), fill=['number', 'logic', 'percent'])
+        if j == 2:
+            fig, ax = venn.venn2(labels, names=list('12345'))
+        elif j == 3:
+            fig, ax = venn.venn3(labels, names=list('12345'))
+        elif j == 4:
+            fig, ax = venn.venn4(labels, names=list('12345'))
+        fig.savefig(f"multi_venn{j}.pdf", format="pdf")
+        fig.show()
 
 
 def multi_RQ2_1():
